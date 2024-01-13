@@ -144,7 +144,7 @@ app.put("/studentrecords/:id",upload.single('file'),async(req,res,next)=>{
   try {
     const updatedstudent = await collectionstudent.findByIdAndUpdate(req.params.id,{
       $set:req.body,
-      image:req.file.path
+      image:req.file.path //image issue resolve
     },
     {new:true}
     )
