@@ -4,6 +4,7 @@ const collectionlogin = require("./model/login");
 const collectionstudent = require("./model/student");
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require('uuid');
+const QRcode = require("qrcode");
 const path = require("path")
 const fs = require("fs")
 const login_data = require("./data/LOGIN_DATA.json");
