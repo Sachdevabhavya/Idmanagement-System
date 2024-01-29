@@ -43,6 +43,18 @@ const upload = multer({
 })
 
 
+async function generateqrcode(studentId){
+  try {
+    const qrcodedata = `StudentId : ${studentId}`;
+    const qrfilepath = `./qrcodes/${studentId}.png`;
+
+    await QRcode.toFile(qrfilepath,qrcodedata);
+
+    return qrfilepath;
+  } catch (error) {
+    console.error('Error generating QR code:', error);
+  }
+}
 //login
 app.get("/", (req, res) => {
 
@@ -96,6 +108,9 @@ app.post("/studentrecords", upload.single('file'), async (req, res) => {
           return res.status(400).send(`This student with ${req.body.studentId} already exists`);
       }
 
+      const qrCodeFilePath = await generateqrcode(req.body.studentId);
+      studentdata.qrCode = qrCodeFilePath;
+      
       if (req.file && req.file.path) {
           studentdata.image = req.file.path;
       }
