@@ -23,6 +23,16 @@ const studentSchema = mongoose.Schema(
       type: String,
       required: true,
     },
+    phonenumber:{
+      type:Number,
+      required:true,
+      unique:true
+    },
+    emailId:{
+      type:String,
+      required:true,
+      unique:true
+    },
     image: {
       type: String
     },
