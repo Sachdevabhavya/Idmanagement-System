@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const QRcode = require("qrcode");
 const path = require("path")
 const fs = require("fs")
+const passwordHash = require("password-hash");
 const login_data = require("./data/LOGIN_DATA.json");
 
 require("dotenv").config();
@@ -59,13 +60,15 @@ app.post("/login", async (req, res) => {
       email: req.body.email,
       password: req.body.password,
     });
-
+    var hashedpassword = passwordHash.generate(check_login.password);
     if (check_login) {
       console.log(`Login Successful with ${check_login.email}`);
+      console.log(`Hashed password is : ${hashedpassword}`);
       console.log("Login ID:", check_login._id)
       res.status(200).json({
         status: "success",
-        message: `Login Successful with ${check_login.email}`,LoginId:check_login._id,
+        message: `Login Successful with ${check_login.email}`,
+        LoginId:check_login._id,
       });
       
     } else {
@@ -203,6 +206,6 @@ mongoose
   })
   .then((result) => {
     console.log("Mock data stored in database");
-    console.log("Insert result:", result);
+    console.log("Users details:", result);
   })
   .catch((err) => console.log(err));
