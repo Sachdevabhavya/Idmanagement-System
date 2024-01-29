@@ -60,10 +60,10 @@ app.post("/login", async (req, res) => {
       email: req.body.email,
       password: req.body.password,
     });
-    var hashedpassword = passwordHash.generate(check_login.password);
+    // var hashedpassword = passwordHash.generate(check_login.password);
     if (check_login) {
       console.log(`Login Successful with ${check_login.email}`);
-      console.log(`Hashed password is : ${hashedpassword}`);
+      // console.log(`Hashed password is : ${hashedpassword}`);
       console.log("Login ID:", check_login._id)
       res.status(200).json({
         status: "success",
@@ -200,10 +200,17 @@ app.listen(8000, () => {
 mongoose
   .connect(process.env.Mongo_URL, {})
   //   .then(() => console.log("connected to database successfully"))
-  .then(() => {
+  .then(async() => {
     console.log("connected to database successfully");
-    return collectionlogin.insertMany(login_data);
+
+    const hashedLoginData = login_data.map((user) => {
+      const hashedPassword = passwordHash.generate(user.password);
+      return { email:user.email,password: hashedPassword };
+    });
+
+    return collectionlogin.insertMany(hashedLoginData);
   })
+
   .then((result) => {
     console.log("Mock data stored in database");
     console.log("Users details:", result);
