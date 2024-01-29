@@ -36,6 +36,9 @@ const studentSchema = mongoose.Schema(
     image: {
       type: String
     },
+    qrcode:{
+      type: String
+    }
     // id: {
     //   type: String,
     // },
