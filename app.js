@@ -16,7 +16,7 @@ app.use(express.urlencoded({extended: false}));
 const Img_Dir = "./images/"
 app.use(express.json());
 
-
+//storage for image
 const Storage = multer.diskStorage({
   destination: (req, file, cb) => {
       cb(null, Img_Dir);
@@ -27,6 +27,7 @@ const Storage = multer.diskStorage({
   }
 });
 
+//upload image
 const upload = multer({
   storage: Storage,
   fileFilter: (req, file, cb) => {
@@ -41,7 +42,7 @@ const upload = multer({
 })
 
 
-
+//login
 app.get("/", (req, res) => {
 
 });
@@ -79,7 +80,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-
+//create a student id
 app.post("/studentrecords", upload.single('file'), async (req, res) => {
   const studentdata = new collectionstudent(req.body);
   console.log('Request Body:', req.body);
@@ -106,6 +107,7 @@ app.post("/studentrecords", upload.single('file'), async (req, res) => {
   }
 });
 
+//get student for update
 app.get("/studentrecords/:id",async(req,res)=>{
   try {
     const student = await collectionstudent.findById(req.params.id)
@@ -118,6 +120,7 @@ app.get("/studentrecords/:id",async(req,res)=>{
   }
 })
 
+//update student
 app.put("/studentrecords/:id",upload.single('file'),async(req,res,next)=>{
 
   if (req.file) {
@@ -157,6 +160,7 @@ app.put("/studentrecords/:id",upload.single('file'),async(req,res,next)=>{
   }
 })
 
+//delete student 
 app.delete("/studentrecords/:id",async(req,res)=>{
   try {
     const deletedstudent = await collectionstudent.findByIdAndDelete(req.params.id)
@@ -168,6 +172,7 @@ app.delete("/studentrecords/:id",async(req,res)=>{
   }
 })
 
+//search student 
 app.get("/studentrecords",async(req,res)=>{
   const searchId = req.query.studentId
   
@@ -183,10 +188,12 @@ app.get("/studentrecords",async(req,res)=>{
   }
 })
 
+//server
 app.listen(8000, () => {
   console.log("successfully running on local host 8000 ");
 });
 
+//database connection
 mongoose
   .connect(process.env.Mongo_URL, {})
   //   .then(() => console.log("connected to database successfully"))
