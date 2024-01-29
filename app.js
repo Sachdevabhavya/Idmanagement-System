@@ -70,26 +70,33 @@ app.post("/login", async (req, res) => {
   try {
     const check_login = await collectionlogin.findOne({
       email: req.body.email,
-      password: req.body.password,
+      // password: req.body.password,
     });
     // var hashedpassword = passwordHash.generate(check_login.password);
     if (check_login) {
-      console.log(`Login Successful with ${check_login.email}`);
-      // console.log(`Hashed password is : ${hashedpassword}`);
-      console.log("Login ID:", check_login._id)
-      res.status(200).json({
-        status: "success",
-        message: `Login Successful with ${check_login.email}`,
-        LoginId:check_login._id,
-      });
-      
+      if (passwordHash.verify(req.body.password, check_login.password)) {
+        console.log(`Login Successful with ${check_login.email}`);
+        console.log("Login ID:", check_login._id);
+        res.status(200).json({
+          status: "success",
+          message: `Login Successful with ${check_login.email}`,
+          LoginId: check_login._id,
+        });
+      } else {
+        console.log("Invalid password");
+        res.status(401).json({
+          status: "failed",
+          message: "Invalid password",
+        });
+      }
     } else {
-      console.log("Invalid credentials");
+      console.log("User not found");
       res.status(401).json({
         status: "failed",
-        message: "Invalid credentials",
+        message: "User not found",
       });
     }
+  
   } catch (err) {
     console.log(err);
   }
@@ -110,7 +117,7 @@ app.post("/studentrecords", upload.single('file'), async (req, res) => {
 
       const qrCodeFilePath = await generateqrcode(req.body.studentId);
       studentdata.qrCode = qrCodeFilePath;
-      
+
       if (req.file && req.file.path) {
           studentdata.image = req.file.path;
       }
