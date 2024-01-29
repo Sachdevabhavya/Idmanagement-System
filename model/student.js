@@ -31,7 +31,7 @@ const studentSchema = mongoose.Schema(
     emailId:{
       type:String,
       required:true,
-      unique:true
+      
     },
     image: {
       type: String
