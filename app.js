@@ -23,6 +23,7 @@ app.use(express.json());
 // }
 
 //storage for image
+
 const Storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, Img_Dir);
@@ -126,8 +127,7 @@ app.post("/login", async (req, res) => {
 app.post("/:loginId/studentrecords",upload.single("file"),async (req, res) => {
     const studentdata = new collectionstudent(req.body);
     const loginId = req.params.loginId;
-    console.log("Request Body:", req.body);
-    console.log("Request File:", req.file);
+
 
     try {
       const checkLogin = await collectionlogin.findById(loginId);
@@ -137,32 +137,46 @@ app.post("/:loginId/studentrecords",upload.single("file"),async (req, res) => {
           message: "Login ID not found",
         });
       }
+      let flag = false
       const checking = await collectionstudent.findOne({
         studentId: req.body.studentId,
       });
 
       if (checking && checking.studentId === req.body.studentId) {
+        let flag=true
+        console.log(`This student with ${req.body.studentId} already exists`)
+        console.log(flag)
         return res
           .status(400)
           .send(`This student with ${req.body.studentId} already exists`);
+          
       }
 
       const qrCodeFilePath = await generateqrcode(req.body.studentId,req.body.firstname,req.body.lastname,req.body.course,req.body.dateofbirth,req.body.phonenumber,req.body.emailId);
       studentdata.qrCode = qrCodeFilePath;
 
-      if (req.file && req.file.path) {
+      if (flag==false && req.file && req.file.path) {
         // const filepath = await generatefilename(req.body.studentId);
         // studentdata.image = filepath
         studentdata.image = req.file.path;
+        console.log(req.file.path)
+        console.log(flag)
       }
 
-      const savedstudent = await studentdata.save();
-      console.log(`Student saved with id: ${req.body.studentId}`);
-      console.log("Student DB Id:", savedstudent._id);
-      console.log(
-        `Student with ${savedstudent._id} saved with login id : ${loginId}`
-      );
-      res.json(savedstudent);
+      else{
+        studentdata.image=null
+      }
+      if(flag==false){
+
+        console.log("Request Body:", req.body);
+        console.log("Request File:", req.file);
+        const savedstudent = await studentdata.save();
+        console.log(`Student saved with id: ${req.body.studentId}`);
+        console.log("Student DB Id:", savedstudent._id);
+        console.log(`Student with ${savedstudent._id} saved with login id : ${loginId}`);
+        res.json(savedstudent);
+      }
+
     } catch (err) {
       console.log(err.message);
       res.status(500).send("Internal Server Error");
